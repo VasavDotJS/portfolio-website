@@ -1,0 +1,86 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  stack       String   // Comma-separated tech stack elements
+  liveLink    String?
+  githubLink  String?
+  imageUrl    String
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  content     String    // Markdown content
+  excerpt     String    // Short description
+  tags        String    // Comma-separated tag strings
+  category    String    @default("General")
+  published   Boolean   @default(false)
+  readingTime Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  comments    Comment[]
+}
+
+model Comment {
+  id          String   @id @default(cuid())
+  postId      String
+  authorName  String
+  authorEmail String
+  content     String
+  approved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  post        BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model MusicEntry {
+  id         String   @id @default(cuid())
+  trackName  String
+  artistName String
+  albumName  String
+  artworkUrl String
+  mood       String?
+  notes      String?  // Thoughts or comments on the track
+  active     Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+}
+
+model SystemStatus {
+  id           String   @id @default(cuid())
+  statusText   String
+  location     String   @default("MAC Ramapuram")
+  availability String   @default("Available")
+  updatedAt    DateTime @updatedAt
+}
+
+model MediaUpload {
+  id        String   @id @default(cuid())
+  filename  String
+  filepath  String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+}
